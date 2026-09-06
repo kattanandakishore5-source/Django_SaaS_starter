@@ -1,4 +1,4 @@
-﻿from django.conf import settings
+from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -26,6 +26,10 @@ def send_email_async(subject, message, recipient_list, template=None, context=No
         return f"Email sent to {recipient_list}"
     except Exception as exc:
         return f"Error sending email: {exc}"
+
+
+# Provide .delay alias for Celery-compatible call pattern in synchronous mode
+send_email_async.delay = send_email_async
 
 
 class DataExporter:

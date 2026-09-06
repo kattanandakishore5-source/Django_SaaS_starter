@@ -76,7 +76,7 @@ django-admin-pro/
 **Time: 2 minutes**
 
 ```bash
-cd django-admin-pro
+cd Django_SaaS_starter
 cp .env.example .env
 docker-compose up -d
 docker-compose exec web python manage.py migrate
@@ -89,7 +89,7 @@ docker-compose exec web python manage.py create_demo_data
 **Time: 3 minutes**
 
 ```bash
-cd django-admin-pro
+cd Django_SaaS_starter
 
 # Linux/Mac
 chmod +x setup.sh
@@ -103,10 +103,11 @@ setup.bat
 **Time: 5 minutes**
 
 ```bash
-cd django-admin-pro
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+cd Django_SaaS_starter
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 cp .env.example .env
 python manage.py migrate
 python manage.py create_demo_data
@@ -257,7 +258,7 @@ See **DEPLOYMENT.md** for detailed production setup.
 
 | Layer | Technology |
 |-------|-----------|
-| **Backend** | Django 4.2, DRF 3.14, PostgreSQL 15, Redis 7 |
+| **Backend** | Django 6.1, DRF 3.18, PostgreSQL 15, Redis 7 |
 | **Async** | Celery 5.3, Celery Beat |
 | **Frontend** | Tailwind CSS, Alpine.js, HTMX, Chart.js |
 | **API** | REST, JWT, Token Auth |

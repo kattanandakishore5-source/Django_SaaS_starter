@@ -1,4 +1,4 @@
-﻿from django.test import TestCase, Client
+from django.test import TestCase, Client
 
 from apps.accounts.models import CustomUser
 from apps.dashboard.models import Dashboard
@@ -46,3 +46,32 @@ class DashboardChartTestCase(TestCase):
         data = response.json()
         self.assertIn('labels', data)
         self.assertIn('data', data)
+
+
+class DocumentationAndAdminTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.superuser = CustomUser.objects.create_superuser(
+            email='admin@example.com',
+            password='adminpassword123',
+        )
+
+    def test_swagger_schema_ui(self):
+        response = self.client.get('/api/docs/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_redoc_schema_ui(self):
+        response = self.client.get('/api/redoc/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_login_and_changelist(self):
+        self.client.login(username='admin@example.com', password='adminpassword123')
+        admin_home = self.client.get('/admin/')
+        self.assertEqual(admin_home.status_code, 200)
+
+        user_changelist = self.client.get('/admin/accounts/customuser/')
+        self.assertEqual(user_changelist.status_code, 200)
+
+        dashboard_changelist = self.client.get('/admin/dashboard/dashboard/')
+        self.assertEqual(dashboard_changelist.status_code, 200)
+

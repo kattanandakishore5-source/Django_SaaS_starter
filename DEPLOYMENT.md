@@ -146,19 +146,20 @@ SECURE_HSTS_PRELOAD=True
    ssh -i your-key.pem ec2-user@your-instance-ip
    
    # Ubuntu
-   sudo apt update && sudo apt install -y python3.11 python3-pip postgresql-client redis-tools nginx supervisor git
+   sudo apt update && sudo apt install -y python3.12 python3-pip postgresql-client redis-tools nginx supervisor git
    
    # Amazon Linux
-   sudo yum install -y python3.11 python3-pip postgresql postgresql-contrib nginx supervisor git
+   sudo yum install -y python3.12 python3-pip postgresql postgresql-contrib nginx supervisor git
    ```
 
 3. **Clone and setup**
    ```bash
    git clone your-repo-url
-   cd django-admin-pro
-   python3.11 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
+   cd Django_SaaS_starter
+   python3.12 -m venv .venv
+   source .venv/bin/activate
+   python -m pip install --upgrade pip
+   python -m pip install -r requirements.txt
    ```
 
 4. **Configure environment**

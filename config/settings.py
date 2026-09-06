@@ -1,29 +1,6 @@
 import os
 from pathlib import Path
 from decouple import config, Csv
-# Patch for template Context copy compatibility in some Python/Django combos.
-try:
-    from copy import copy as _copy
-    from django.template import context as _django_template_context
-
-    def _basecontext_copy(self):
-        # Create a new empty instance and copy the dicts list
-        duplicate = object.__new__(self.__class__)
-        duplicate.dicts = self.dicts[:]
-        return duplicate
-
-    def _context_copy(self):
-        duplicate = _basecontext_copy(self)
-        # copy render_context if present
-        if hasattr(self, 'render_context'):
-            duplicate.render_context = _copy(self.render_context)
-        return duplicate
-
-    _django_template_context.BaseContext.__copy__ = _basecontext_copy
-    _django_template_context.Context.__copy__ = _context_copy
-except Exception:
-    # If patching fails, continue without breaking settings import.
-    pass
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -57,6 +34,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -82,10 +60,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
+DB_ENGINE = config(
+    'DB_ENGINE',
+    default='django.db.backends.postgresql' if config('DB_HOST', default='') else 'django.db.backends.sqlite3',
+)
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': config('DB_NAME', default='django_admin_pro'),
+        'ENGINE': DB_ENGINE,
+        'NAME': config('DB_NAME', default=str(BASE_DIR / 'db.sqlite3') if DB_ENGINE == 'django.db.backends.sqlite3' else 'django_admin_pro'),
         'USER': config('DB_USER', default='admin'),
         'PASSWORD': config('DB_PASSWORD', default='admin123'),
         'HOST': config('DB_HOST', default='localhost'),
@@ -111,6 +94,15 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Storage Configuration (Django 5.1+ / 6.x)
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -141,12 +133,17 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
-# CORS
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-]
+# CORS & CSRF
+CORS_ALLOWED_ORIGINS = config(
+    'CORS_ALLOWED_ORIGINS',
+    default='http://localhost:3000,http://localhost:8000,http://127.0.0.1:8000',
+    cast=Csv(),
+)
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='http://localhost:3000,http://localhost:8000,http://127.0.0.1:8000',
+    cast=Csv(),
+)
 
 # Email Configuration
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
@@ -195,5 +192,5 @@ if not DEBUG:
     from django.core.exceptions import ImproperlyConfigured
     if SECRET_KEY == 'django-insecure-change-this-in-production':
         raise ImproperlyConfigured("SECRET_KEY must be configured in production.")
-    if DATABASES['default']['PASSWORD'] == 'admin123':
+    if DATABASES['default']['ENGINE'] != 'django.db.backends.sqlite3' and DATABASES['default']['PASSWORD'] in ('', 'admin123'):
         raise ImproperlyConfigured("DB_PASSWORD must be configured in production.")
