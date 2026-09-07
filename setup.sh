@@ -21,22 +21,31 @@ else
     echo -e "${GREEN}✓ .env already exists${NC}"
 fi
 
-# Install dependencies
+# Check Python
 if command -v python3 &> /dev/null; then
-    echo -e "${BLUE}Installing Python dependencies...${NC}"
-    pip install -r requirements.txt
-    echo -e "${GREEN}✓ Dependencies installed${NC}"
+    PYTHON_BIN="python3"
+elif command -v python &> /dev/null; then
+    PYTHON_BIN="python"
 else
-    echo -e "${YELLOW}Python not found. Please install Python 3.11+${NC}"
+    echo -e "${YELLOW}Python not found. Please install Python 3.12+${NC}"
     exit 1
 fi
 
 # Create virtual environment if using local setup
-if [ ! -d "venv" ]; then
-    echo -e "${BLUE}Creating virtual environment...${NC}"
-    python3 -m venv venv
+if [ ! -d ".venv" ]; then
+    echo -e "${BLUE}Creating virtual environment (.venv)...${NC}"
+    $PYTHON_BIN -m venv .venv
     echo -e "${GREEN}✓ Virtual environment created${NC}"
 fi
+
+# Activate virtual environment
+source .venv/bin/activate
+
+# Install dependencies inside venv
+echo -e "${BLUE}Upgrading pip and installing Python dependencies...${NC}"
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+echo -e "${GREEN}✓ Dependencies installed${NC}"
 
 # Run migrations
 echo -e "${BLUE}Running migrations...${NC}"

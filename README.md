@@ -1,6 +1,6 @@
 # Django Starter - SaaS Dashboard Boilerplate
 
-**Django Starter** is a production-ready SaaS dashboard boilerplate built with Django 4.2, designed to help developers rapidly build customer-facing admin panels. Unlike traditional Django admin themes (like Unfold, Jazzmin), Django Starter escapes the admin jail with custom views, modern authentication, RBAC, and pre-wired analytics.
+**Django Starter** is a production-ready SaaS dashboard boilerplate built with Django 6.1, designed to help developers rapidly build customer-facing admin panels. Unlike traditional Django admin themes (like Unfold, Jazzmin), Django Starter escapes the admin jail with custom views, modern authentication, RBAC, and pre-wired analytics.
 
 ## 🚀 Features
 
@@ -68,7 +68,7 @@ django-admin-pro/
 
 ### Prerequisites
 - Docker & Docker Compose
-- Python 3.11+ (if running without Docker)
+- Python 3.12+ (if running without Docker)
 - PostgreSQL 15+ (if running without Docker)
 - Redis 7+ (if running without Docker)
 
@@ -79,7 +79,7 @@ django-admin-pro/
 ```bash
 # Clone the repository
 git clone <repo-url>
-cd django-admin-pro
+cd Django_SaaS_starter
 
 # Copy environment file
 cp .env.example .env
@@ -103,11 +103,12 @@ docker-compose exec web python manage.py createsuperuser
 
 ```bash
 # Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install dependencies
-pip install -r requirements.txt
+# Upgrade pip and install dependencies
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 
 # Copy environment file
 cp .env.example .env

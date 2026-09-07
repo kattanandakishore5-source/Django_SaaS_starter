@@ -1,7 +1,4 @@
 **Django Starter — Starter Edition**
-
-Price: $19
-
 ---
 
 # Headline

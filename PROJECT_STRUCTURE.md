@@ -169,8 +169,8 @@ django-admin-pro/
 ## Technology Stack
 
 ### Backend
-- Django 4.2
-- Django REST Framework 3.14
+- Django 6.1
+- Django REST Framework 3.18
 - PostgreSQL 15
 - Redis 7
 - Celery 5.3 (async tasks)

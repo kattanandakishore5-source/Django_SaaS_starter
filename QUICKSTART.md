@@ -12,8 +12,8 @@ Get up and running in 5 minutes!
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/django-admin-pro.git
-cd django-admin-pro
+git clone https://github.com/kattanandakishore5-source/Django_SaaS_starter.git
+cd Django_SaaS_starter
 
 # 2. Copy environment file
 cp .env.example .env
@@ -42,24 +42,25 @@ docker-compose exec web python manage.py create_demo_data
 ## 🐍 Local Setup (Without Docker)
 
 ### Prerequisites
-- Python 3.11+
-- PostgreSQL 15+
+- Python 3.12+
+- PostgreSQL 15+ (or SQLite default)
 - Redis 7+
-- pip & virtualenv
+- pip & virtual environment
 
 ### Steps
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/django-admin-pro.git
-cd django-admin-pro
+git clone https://github.com/kattanandakishore5-source/Django_SaaS_starter.git
+cd Django_SaaS_starter
 
 # 2. Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# 3. Install dependencies
-pip install -r requirements.txt
+# 3. Upgrade pip & install dependencies
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 
 # 4. Copy environment file
 cp .env.example .env

@@ -22,25 +22,26 @@ if not exist .env (
 REM Check Python
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo Error: Python not found. Please install Python 3.11+
+    echo Error: Python not found. Please install Python 3.12+
     exit /b 1
 )
 
-echo Installing Python dependencies...
-pip install -r requirements.txt
-echo ✓ Dependencies installed
-echo.
-
 REM Create virtual environment if it doesn't exist
-if not exist venv (
-    echo Creating virtual environment...
-    python -m venv venv
+if not exist .venv (
+    echo Creating virtual environment (.venv)...
+    python -m venv .venv
     echo ✓ Virtual environment created
     echo.
 )
 
 REM Activate virtual environment
-call venv\Scripts\activate.bat
+call .venv\Scripts\activate.bat
+
+echo Upgrading pip and installing Python dependencies...
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+echo ✓ Dependencies installed
+echo.
 
 echo Running migrations...
 python manage.py migrate

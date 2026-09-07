@@ -1,4 +1,4 @@
-﻿from datetime import timedelta
+from datetime import timedelta
 
 from django.test import TestCase
 from django.urls import reverse
@@ -149,3 +149,64 @@ class BrowserAuthFlowTestCase(TestCase):
         self.assertTrue(self.user.check_password('NewStrongPass123!'))
         reset.refresh_from_db()
         self.assertTrue(reset.used)
+
+    def test_password_reset_request_view(self):
+        response = self.client.post(
+            reverse('password_reset_request'),
+            {'email': 'owner@example.com'},
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(PasswordReset.objects.filter(user=self.user).exists())
+
+    def test_root_redirect(self):
+        # Unauthenticated redirects to login
+        res = self.client.get('/')
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(res, reverse('login'))
+
+        # Authenticated redirects to dashboard
+        self.client.login(username='owner@example.com', password='StrongPass123!')
+        res_auth = self.client.get('/')
+        self.assertEqual(res_auth.status_code, 302)
+        self.assertRedirects(res_auth, reverse('dashboard_home'))
+
+
+class ApiAuthTestCase(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            email='apiuser@example.com',
+            password='ApiPass123!',
+            first_name='Api',
+            last_name='User',
+        )
+
+    def test_api_login_and_profile(self):
+        login_resp = self.client.post(
+            '/api/auth/login/',
+            {'email': 'apiuser@example.com', 'password': 'ApiPass123!'},
+            content_type='application/json',
+        )
+        self.assertEqual(login_resp.status_code, 200)
+        data = login_resp.json()
+        self.assertEqual(data['user']['email'], 'apiuser@example.com')
+
+        # Test profile endpoint while logged in
+        profile_resp = self.client.get('/api/auth/users/profile/')
+        self.assertEqual(profile_resp.status_code, 200)
+        self.assertEqual(profile_resp.json()['email'], 'apiuser@example.com')
+
+    def test_api_signup(self):
+        signup_resp = self.client.post(
+            '/api/auth/signup/',
+            {
+                'email': 'newapiuser@example.com',
+                'password': 'ApiPass123!',
+                'first_name': 'New',
+                'last_name': 'Api',
+            },
+            content_type='application/json',
+        )
+        self.assertEqual(signup_resp.status_code, 201)
+        self.assertTrue(CustomUser.objects.filter(email='newapiuser@example.com').exists())
+
